@@ -14,17 +14,8 @@ namespace Dsw2025Tpi.Api.Helpers
             services.AddDbContext<AuthenticateContext>(options =>
                 options.UseSqlServer(connection));
 
-            services.AddDbContext<Dsw2025TpiContext>(options =>
-            {
-                options.UseSqlServer(connection);
-                options.UseSeeding((c, t) =>
-                {
-                    ((Dsw2025TpiContext)c).Seedwork<Customer>("Sources\\customers.json");
-                    ((Dsw2025TpiContext)c).Seedwork<Product>("Sources\\products.json");
-                    ((Dsw2025TpiContext)c).Seedwork<Order>("Sources\\orders.json");
-                    ((Dsw2025TpiContext)c).Seedwork<OrderItem>("Sources\\orderitems.json");
-                });
-            });
+                services.AddDbContext<Dsw2025TpiContext>(options =>
+                options.UseSqlServer(connection));
 
             return services;
         }

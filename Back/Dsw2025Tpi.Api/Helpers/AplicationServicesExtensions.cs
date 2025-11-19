@@ -10,13 +10,18 @@ namespace Dsw2025Tpi.Api.Helpers
     {
         public static IServiceCollection AddAplicationServices(this IServiceCollection services)
         {
-            // Servicio que genera los tokens JWT
+            // Servicio que genera los tokens JWT (Singleton está bien porque no depende del contexto)
             services.AddSingleton<JwtTokenService>();
-            services.AddScoped<IRepository, EfRepository>(); // Patrón repositorio
-            services.AddTransient<IProductsManagementService, ProductsManagementService>();
-            services.AddTransient<ProductsManagmentServiceExtensions>();
-            services.AddTransient<IOrdersManagementService, OrdersManagementService>();
-            services.AddTransient<OrdersManagementServiceExtensions>();
+            
+            services.AddScoped<IRepository, EfRepository>(); // Patrón repositorio (Scoped)
+
+            // CAMBIO IMPORTANTE: Cambiar AddTransient por AddScoped
+            services.AddScoped<IProductsManagementService, ProductsManagementService>();
+            services.AddScoped<ProductsManagmentServiceExtensions>();
+            
+            services.AddScoped<IOrdersManagementService, OrdersManagementService>();
+            services.AddScoped<OrdersManagementServiceExtensions>();
+
             return services;
         }
     }

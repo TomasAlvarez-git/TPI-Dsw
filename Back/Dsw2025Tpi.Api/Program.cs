@@ -25,7 +25,7 @@ public class Program
 
         builder.Services.AddLoggingService(builder.Configuration); // Configura el servicio de logging
 
-        // Agrega servicios básicos para controladores
+        // Agrega servicios bï¿½sicos para controladores
         builder.Services.AddControllers();
 
         // Agrega servicios para documentar la API (Swagger/OpenAPI)
@@ -37,19 +37,42 @@ public class Program
         // Agrega soporte para health checks
         builder.Services.AddHealthChecks();
 
-        // Configura la autenticación y autorización con JWT
+        // Configura la autenticaciï¿½n y autorizaciï¿½n con JWT
         builder.Services.AddAuthenticationAndAuthorization(builder.Configuration);
 
-        // Configuración de la base de datos y el contexto
+        // Configuraciï¿½n de la base de datos y el contexto
         builder.Services.AddDbContexts(builder.Configuration);
-
-        // Inyección de dependencias para servicios y repositorios
+        
+        // Inyecciï¿½n de dependencias para servicios y repositorios
         builder.Services.AddAplicationServices();
 
-        // Política CORS para permitir frontend en localhost:3000
+        // Polï¿½tica CORS para permitir frontend en localhost:3000
         builder.Services.AddCustomCors();
 
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var services = scope.ServiceProvider;
+            try
+            {
+                var context = services.GetRequiredService<Dsw2025TpiContext>();
+                
+                // Asegura que la BD exista y carga datos si es necesario
+                context.Database.EnsureCreated(); 
+                
+                // Ejecuta la carga de datos desde los JSON
+                context.Seedwork<Customer>("Sources\\customers.json");
+                context.Seedwork<Product>("Sources\\products.json");
+                context.Seedwork<Order>("Sources\\orders.json");
+                context.Seedwork<OrderItem>("Sources\\orderitems.json");
+            }
+            catch (Exception ex)
+            {
+                var logger = services.GetRequiredService<ILogger<Program>>();
+                logger.LogError(ex, "OcurriÃ³ un error durante el seeding de la base de datos.");
+            }
+        }
 
         // Middleware para entorno de desarrollo: habilita Swagger
         if (app.Environment.IsDevelopment())
@@ -67,7 +90,7 @@ public class Program
         // Endpoint para health check
         app.MapHealthChecks("/healthcheck");
 
-        // Inicia la aplicación
+        // Inicia la aplicaciï¿½n
         app.Run();
     }
 }
