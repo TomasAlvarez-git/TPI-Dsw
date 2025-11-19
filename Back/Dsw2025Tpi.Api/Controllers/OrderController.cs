@@ -15,7 +15,7 @@ namespace Dsw2025Tpi.Api.Controllers
     [Authorize]
 
     // Ruta base para todos los endpoints del controlador
-    [Route("api/order")]
+    [Route("api/orders")]
     public class OrderController : ControllerBase
     {
         // Servicio que contiene la lógica de negocio para la gestión de órdenes

@@ -41,28 +41,52 @@ namespace Dsw2025Tpi.Api.Controllers
 
         // === GET: api/products ===
         // Devuelve todos los productos (solo Admin)
-        [HttpGet()]
-        [AllowAnonymous]
-        public async Task<IActionResult> GetProducts()
+        // [HttpGet()]
+        // [AllowAnonymous]
+        // public async Task<IActionResult> GetProducts()
+        // {
+        //     // Obtiene la lista de productos
+        //     var products = await _service.GetProducts();
+
+        //     // Mapea los campos que se quieren exponer
+        //     var result = products.Select(p => new
+        //     {
+        //         p.Id,
+        //         p.Sku,
+        //         p.InternalCode,
+        //         p.Name,
+        //         p.Description,
+        //         p.CurrentPrice,
+        //         p.StockQuantity,
+        //         p.IsActive
+        //     });
+
+        //     // Retorna 200 OK con la lista de productos
+        //     return Ok(result);
+        // }
+
+        [HttpGet("admin")]
+        [Authorize(Roles = "Admin")]
+        public async Task<IActionResult> GetAuthProducts([FromQuery] ProductModel.FilterProduct request)
         {
-            // Obtiene la lista de productos
-            var products = await _service.GetProducts();
+            var result = await _service.GetProducts(request);
 
-            // Mapea los campos que se quieren exponer
-            var result = products.Select(p => new
-            {
-                p.Id,
-                p.Sku,
-                p.InternalCode,
-                p.Name,
-                p.Description,
-                p.CurrentPrice,
-                p.StockQuantity,
-                p.IsActive
-            });
-
-            // Retorna 200 OK con la lista de productos
+            // Si result es null o vacío, podrías devolver NoContent o la estructura vacía.
+            // Según tu lógica actual en servicio, devolvemos la estructura con total 0.
+            
             return Ok(result);
+        }
+
+        // Puedes mantener el Get anterior para la vista pública si quieres, 
+        // pero tendrás que adaptarlo para usar el nuevo método del servicio con filtros por defecto.
+        [HttpGet]
+        [AllowAnonymous]
+        public async Task<IActionResult> GetPublicProducts()
+        {
+            // Ejemplo: Traer solo activos, página 1, 100 productos
+            var filter = new ProductModel.FilterProduct("enabled", null, 1, 100);
+            var result = await _service.GetProducts(filter);
+            return Ok(result?.ProductItems); // Retorna solo la lista para compatibilidad simple
         }
 
         // === GET: api/products/{id} ===

@@ -29,6 +29,12 @@ namespace Dsw2025Tpi.Application.Dtos
             int? StockQuantity,    // Cantidad en stock (puede ser nulo)
             bool? IsActive         // Estado de actividad del producto (true = activo, false = deshabilitado)
         );
+
+        // DTO para recibir los filtros desde el Controller
+        public record FilterProduct(string? Status, string? Search, int PageNumber, int PageSize);
+
+        // DTO para devolver la lista paginada y el total
+        public record ResponsePagination(IEnumerable<Response> ProductItems, int Total);
     }
 }
 
