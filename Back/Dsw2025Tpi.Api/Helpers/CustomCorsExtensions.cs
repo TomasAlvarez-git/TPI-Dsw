@@ -7,9 +7,9 @@
             services.AddCors(options =>
             {
                 options.AddPolicy("PermitirFrontend", policy =>
-                    policy.WithOrigins("http://localhost:3005")
-                        .AllowAnyHeader()
-                        .AllowAnyMethod());
+                    policy.AllowAnyOrigin() // <--- Usa esto solo para probar
+                    .AllowAnyHeader()
+                    .AllowAnyMethod());
             });
 
             return services;

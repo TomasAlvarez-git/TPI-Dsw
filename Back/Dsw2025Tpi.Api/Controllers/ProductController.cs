@@ -39,32 +39,6 @@ namespace Dsw2025Tpi.Api.Controllers
             return Created($"/api/products/{product.Sku}", product);
         }
 
-        // === GET: api/products ===
-        // Devuelve todos los productos (solo Admin)
-        // [HttpGet()]
-        // [AllowAnonymous]
-        // public async Task<IActionResult> GetProducts()
-        // {
-        //     // Obtiene la lista de productos
-        //     var products = await _service.GetProducts();
-
-        //     // Mapea los campos que se quieren exponer
-        //     var result = products.Select(p => new
-        //     {
-        //         p.Id,
-        //         p.Sku,
-        //         p.InternalCode,
-        //         p.Name,
-        //         p.Description,
-        //         p.CurrentPrice,
-        //         p.StockQuantity,
-        //         p.IsActive
-        //     });
-
-        //     // Retorna 200 OK con la lista de productos
-        //     return Ok(result);
-        // }
-
         [HttpGet("admin")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAuthProducts([FromQuery] ProductModel.FilterProduct request)
@@ -76,9 +50,7 @@ namespace Dsw2025Tpi.Api.Controllers
             
             return Ok(result);
         }
-
-        // Puedes mantener el Get anterior para la vista pública si quieres, 
-        // pero tendrás que adaptarlo para usar el nuevo método del servicio con filtros por defecto.
+        
         [HttpGet]
         [AllowAnonymous]
         public async Task<IActionResult> GetPublicProducts()

@@ -4,9 +4,9 @@
     {
         public static IApplicationBuilder UseCustomMiddlewares(this IApplicationBuilder app)
         {
+            app.UseCors("PermitirFrontend");
             app.UseExceptionMiddleware();
             app.UseHttpsRedirection();
-            app.UseCors("PermitirFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
             return app;
