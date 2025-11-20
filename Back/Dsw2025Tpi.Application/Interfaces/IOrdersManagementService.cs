@@ -6,7 +6,7 @@ namespace Dsw2025Tpi.Application.Interfaces
     public interface IOrdersManagementService
     {
         Task<OrderModel.Response> AddOrder(OrderModel.Request request);
-        Task<List<OrderModel.Response>> GetOrders(OrderStatus? status, Guid? customerId, int pageNumber, int pageSize);
+        Task<OrderModel.ResponsePagination> GetOrders(OrderStatus? status, Guid? customerId, int pageNumber, int pageSize);
         Task<Order?> GetOrderById(Guid id);
         Task<OrderModel.Response?> UpdateOrderStatus(Guid id, string newStatusText);
     }

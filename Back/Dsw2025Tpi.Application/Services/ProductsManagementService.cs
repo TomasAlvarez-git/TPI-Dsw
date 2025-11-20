@@ -53,49 +53,49 @@ namespace Dsw2025Tpi.Application.Services
 
         public async Task<ProductModel.ResponsePagination?> GetProducts(ProductModel.FilterProduct filter)
         {
-        _logger.LogInformation("Obteniendo productos con filtros: {@Filter}", filter);
+            _logger.LogInformation("Obteniendo productos con filtros: {@Filter}", filter);
 
-        // 1. Determinar el estado del filtro (enabled, disabled o todos)
-        bool? isActiveFilter = filter.Status?.ToLower() switch
-        {
-            "enabled" => true,
-            "disabled" => false,
-            _ => null // "all" o nulo trae todos
-        };
+            // 1. Filtro de estado
+            bool? isActiveFilter = filter.Status?.ToLower() switch
+            {
+                "enabled" => true,
+                "disabled" => false,
+                _ => null
+            };
 
-        // 2. Construir la expresión de filtrado
-        // Usamos Expression<Func<Product, bool>> para que EF Core lo traduzca a SQL
-        System.Linq.Expressions.Expression<Func<Product, bool>> predicate = p =>
-            (isActiveFilter == null || p.IsActive == isActiveFilter) &&
-            (string.IsNullOrEmpty(filter.Search) || p.Name.Contains(filter.Search) || p.Sku.Contains(filter.Search));
+            // 2. Predicado de búsqueda
+            System.Linq.Expressions.Expression<Func<Product, bool>> predicate = p =>
+                (isActiveFilter == null || p.IsActive == isActiveFilter) &&
+                (string.IsNullOrEmpty(filter.Search) || p.Name.Contains(filter.Search) || p.Sku.Contains(filter.Search));
 
-        // 3. Obtener TODOS los que cumplen el filtro para saber el TOTAL
-        // Nota: GetFiltered en tu repositorio devuelve IEnumerable. 
-        // Lo ideal sería que tu IRepository tuviera un método Count, pero usaremos lo que hay.
-        var filteredProducts = await _repository.GetFiltered<Product>(predicate);
-        
-        // _extensions.ValidateProductsNull(filteredProducts); // Opcional: lanzar error si no hay nada, o devolver lista vacía.
+            // 3. Obtener datos de la BD
+            var filteredProducts = await _repository.GetFiltered<Product>(predicate);
 
-        if (filteredProducts == null || !filteredProducts.Any())
-        {
-            return new ProductModel.ResponsePagination(new List<ProductModel.Response>(), 0);
+            // Validación opcional: si no quieres lanzar error 404/204 cuando busca y no encuentra, comenta esta línea:
+            // _extensions.ValidateProductsNull(filteredProducts); 
+
+            if (filteredProducts == null || !filteredProducts.Any())
+            {
+                return new ProductModel.ResponsePagination(new List<ProductModel.Response>(), 0);
+            }
+
+            var totalRecords = filteredProducts.Count();
+
+            // 4. VALIDACIÓN DE PAGINACIÓN (Aquí está la corrección clave)
+            // Aseguramos que la página sea al menos 1 y el tamaño al menos 1
+            var page = filter.PageNumber < 1 ? 1 : filter.PageNumber;
+            var size = filter.PageSize < 1 ? 10 : filter.PageSize;
+
+            // 5. Aplicar Paginación
+            var pagedList = filteredProducts
+                .OrderBy(p => p.Name)
+                .Skip((page - 1) * size) // (1-1)*5 = 0. Skip(0) es correcto.
+                .Take(size)
+                .Select(p => _extensions.ToResponse(p))
+                .ToList();
+
+            return new ProductModel.ResponsePagination(pagedList, totalRecords);
         }
-
-        var totalRecords = filteredProducts.Count();
-
-        // 4. Aplicar Paginación (Skip y Take) sobre la lista filtrada
-        // Convertimos a Response antes o después, pero aquí ordenamos y paginamos en memoria 
-        // (Si GetFiltered trae todo a memoria, esto es lo que hay. Si GetFiltered retorna IQueryable, sería más eficiente).
-        var pagedList = filteredProducts
-            .OrderBy(p => p.Name) // Orden por defecto
-            .Skip((filter.PageNumber - 1) * filter.PageSize)
-            .Take(filter.PageSize)
-            .Select(p => _extensions.ToResponse(p)) // Usamos tu método ToResponse (asegúrate que acepte Product con Id si lo agregaste)
-            .ToList();
-
-        // 5. Retornar respuesta paginada
-        return new ProductModel.ResponsePagination(pagedList, totalRecords);
-    }
 
         // Obtiene un producto por su ID
         public async Task<Product?> GetProductById(Guid id)

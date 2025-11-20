@@ -103,35 +103,42 @@ namespace Dsw2025Tpi.Application.Services
         }
 
         // Devuelve una lista paginada de órdenes filtradas por estado y cliente
-        public async Task<List<OrderModel.Response>> GetOrders(OrderStatus? status, Guid? customerId, int pageNumber, int pageSize)
+        public async Task<OrderModel.ResponsePagination> GetOrders(OrderStatus? status, Guid? customerId, int pageNumber, int pageSize)
         {
             _logger.LogInformation("Obteniendo órdenes. Filtros - Estado: {Status}, Cliente: {CustomerId}, Página: {Page}, Tamaño: {Size}",
                 status?.ToString() ?? "Todos", customerId?.ToString() ?? "Todos", pageNumber, pageSize);
 
-            // Filtro dinámico según parámetros opcionales. Se construye una expresión lambda que actúa como filtro:
-            //Si no se pasa status, no se filtra por estado.Si no se pasa customerId, no se filtra por cliente.
-            //Si se pasan, se filtra por el valor correspondiente.
             Expression<Func<Order, bool>> filter = o =>
                 (!status.HasValue || o.Status == status.Value) &&
                 (!customerId.HasValue || o.CustomerId == customerId.Value);
 
+            // 1. Obtener TODOS los resultados que coinciden con el filtro
             var allOrders = await _repository.GetFiltered<Order>(filter, "Items");
 
             if (allOrders == null || !allOrders.Any())
             {
                 _logger.LogInformation("No se encontraron órdenes con los filtros aplicados.");
-                return new List<OrderModel.Response>();
+                // Retornamos lista vacía y total 0
+                return new OrderModel.ResponsePagination(new List<OrderModel.Response>(), 0);
             }
 
-            // Paginado manual
+            // 2. Calcular el Total de registros (antes de paginar)
+            var totalRecords = allOrders.Count();
+
+            // 3. Validar Paginación (Evitar saltos negativos)
+            var page = pageNumber < 1 ? 1 : pageNumber;
+            var size = pageSize < 1 ? 10 : pageSize;
+
+            // 4. Aplicar Paginación
             var pagedOrders = allOrders
-                .Skip((pageNumber - 1) * pageSize) //Calcula cuántos elementos se deben saltar para llegar al comienzo de la página deseada.
-                .Take(pageSize)
+                .OrderByDescending(o => o.Date) // Es buena práctica ordenar por fecha descendente
+                .Skip((page - 1) * size)
+                .Take(size)
                 .ToList();
 
-            _logger.LogInformation("Se encontraron {Count} órdenes en la página {Page}", pagedOrders.Count, pageNumber);
+            _logger.LogInformation("Se encontraron {Count} órdenes en la página {Page}", pagedOrders.Count, page);
 
-            // Obtiene los productos relacionados a los ítems
+            // 5. Obtener productos relacionados (para mapear nombres, etc.)
             var productIds = pagedOrders
                 .SelectMany(o => o.Items)
                 .Select(i => i.ProductId)
@@ -141,7 +148,7 @@ namespace Dsw2025Tpi.Application.Services
             var productsList = await _repository.GetFiltered<Product>(p => productIds.Contains(p.Id));
             var products = productsList.ToDictionary(p => p.Id);
 
-            // Mapea cada orden a su modelo de respuesta
+            // 6. Mapear a DTO
             var responseList = pagedOrders.Select(order => new OrderModel.Response(
                 Id: order.Id,
                 CustomerId: order.CustomerId ?? Guid.Empty,
@@ -164,7 +171,8 @@ namespace Dsw2025Tpi.Application.Services
                 }).ToList()
             )).ToList();
 
-            return responseList;
+            // 7. Retornar objeto con lista y total
+            return new OrderModel.ResponsePagination(responseList, totalRecords);
         }
 
         // Devuelve una orden específica por su ID, incluyendo ítems y productos

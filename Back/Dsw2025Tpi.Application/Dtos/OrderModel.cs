@@ -35,6 +35,8 @@ namespace Dsw2025Tpi.Application.Dtos
             string? Status,                      // Estado actual de la orden (puede ser nulo)
             List<OrderItemModel.Response> OrderItems // Lista de ítems con sus detalles
         );
+
+        public record ResponsePagination(IEnumerable<Response> OrderItems, int Total);
     }
 }
 
