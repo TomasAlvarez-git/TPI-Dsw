@@ -1,33 +1,43 @@
-import { createBrowserRouter, Outlet, RouterProvider } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './modules/auth/context/AuthProvider';
 import LoginPage from './modules/auth/pages/LoginPage';
 import Dashboard from './modules/templates/components/Dashboard';
 import ProtectedRoute from './modules/auth/components/ProtectedRoute';
 import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
-import Home from './modules/home/pages/Home';
+import HomeAdmin from './modules/home/pages/Home'; 
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
 
+// Importa los componentes públicos
+import PublicLayout from './modules/templates/components/PublicLayout';
+import HomePage from './modules/home/pages/Home';
+import CartPage from './modules/orders/pages/CartPage'; // <--- NUEVO IMPORT
+
 function App() {
   const router = createBrowserRouter([
+    // --- RUTAS PÚBLICAS ---
     {
       path: '/',
-      element: <><Outlet /></>,
+      element: <PublicLayout />,
       children: [
         {
-          path: '/',
-          element: <>Listado de productos</>,
+          index: true,
+          element: <HomePage />,
         },
         {
-          path: '/cart',
-          element: <>Carrito de compras</>,
+          path: 'cart',
+          element: <CartPage />, // <--- USAR COMPONENTE REAL
         },
       ],
     },
+    
+    // --- LOGIN ---
     {
       path: '/login',
       element: <LoginPage />,
     },
+
+    // --- ADMIN ---
     {
       path: '/admin',
       element: (
@@ -36,22 +46,10 @@ function App() {
         </ProtectedRoute>
       ),
       children: [
-        {
-          path: '/admin/home',
-          element: <Home />,
-        },
-        {
-          path: '/admin/products',
-          element: <ListProductsPage />,
-        },
-        {
-          path: '/admin/products/create',
-          element: <CreateProductPage />,
-        },
-        {
-          path: '/admin/orders',
-          element: <ListOrdersPage />,
-        },
+        { path: 'home', element: <HomeAdmin /> },
+        { path: 'products', element: <ListProductsPage /> },
+        { path: 'products/create', element: <CreateProductPage /> },
+        { path: 'orders', element: <ListOrdersPage /> },
       ],
     },
   ]);

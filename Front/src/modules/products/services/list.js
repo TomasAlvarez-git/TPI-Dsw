@@ -12,3 +12,11 @@ export const getProducts = async (search = null, status = null, pageNumber = 1, 
 
   return { data: response.data, error: null };
 };
+
+export const getPublicProducts = async () => {
+  // Llamamos al endpoint público (sin /admin)
+const response = await instance.get('api/products');
+
+  // El backend devuelve un array directo en este endpoint, no un objeto paginado
+return { data: response.data, error: null };
+};

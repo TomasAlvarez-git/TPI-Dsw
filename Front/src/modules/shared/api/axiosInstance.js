@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_BACKEND_URL,
+  baseURL: "",
   withCredentials: true,
 });
 
@@ -18,20 +18,21 @@ instance.interceptors.request.use(
   (error) => Promise.reject(error),
 );
 
-instance.interceptors.response.use(
-  (config) => { return config; },
-  (error) => {
-    if (error.status === 401) {
-      if (window.location.pathname.includes('/admin/')) {
-        localStorage.clear();
-        window.location.href = '/login';
-      } else {
-        localStorage.removeItem('token');
-      }
+instance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+
+    // No enviar token al endpoint público
+    if (config.url.startsWith('/api/products') && !config.url.includes('/admin')) {
+      return config; // NO agregar Authorization
     }
 
-    return Promise.reject(error);
-  },
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    return config;
+  }
 );
 
 export { instance };
