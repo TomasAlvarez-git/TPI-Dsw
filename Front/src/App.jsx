@@ -14,6 +14,7 @@ import CreateProductPage from './modules/products/pages/CreateProductPage';
 import PublicLayout from './modules/templates/components/PublicLayout';
 import HomePage from './modules/home/pages/Home';
 import CartPage from './modules/orders/pages/CartPage';
+import SignUpPage from './modules/auth/pages/SignUpPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -32,7 +33,10 @@ function App() {
         },
       ],
     },
-    
+    {
+      path: "/signup",
+      element: <SignUpPage/>
+    },
     // --- LOGIN ---
     {
       path: '/login',
