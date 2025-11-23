@@ -1,5 +1,7 @@
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './modules/auth/context/AuthProvider';
+import { CartProvider } from './modules/orders/context/CartContext'; // <--- 1. IMPORTAR EL CONTEXTO
+
 import LoginPage from './modules/auth/pages/LoginPage';
 import Dashboard from './modules/templates/components/Dashboard';
 import ProtectedRoute from './modules/auth/components/ProtectedRoute';
@@ -11,7 +13,7 @@ import CreateProductPage from './modules/products/pages/CreateProductPage';
 // Importa los componentes públicos
 import PublicLayout from './modules/templates/components/PublicLayout';
 import HomePage from './modules/home/pages/Home';
-import CartPage from './modules/orders/pages/CartPage'; // <--- NUEVO IMPORT
+import CartPage from './modules/orders/pages/CartPage';
 
 function App() {
   const router = createBrowserRouter([
@@ -26,7 +28,7 @@ function App() {
         },
         {
           path: 'cart',
-          element: <CartPage />, // <--- USAR COMPONENTE REAL
+          element: <CartPage />,
         },
       ],
     },
@@ -56,7 +58,10 @@ function App() {
 
   return (
     <AuthProvider>
-      <RouterProvider router={router} />
+      {/* 2. ENVOLVER LA APP CON EL PROVIDER DEL CARRITO */}
+      <CartProvider>
+        <RouterProvider router={router} />
+      </CartProvider>
     </AuthProvider>
   );
 }
