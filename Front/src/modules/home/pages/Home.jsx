@@ -16,19 +16,34 @@ function HomePage() {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search")?.toLowerCase() || "";
 
+  // useEffect(() => {
+  //   async function loadData() {
+  //     try {
+  //       const { data } = await getPublicProducts();
+  //       setProducts(data || []);
+  //     } catch (error) {
+  //       console.error("Error cargando productos:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   }
+  //   loadData();
+  // }, []);
+
   useEffect(() => {
-    async function loadData() {
-      try {
-        const { data } = await getPublicProducts();
-        setProducts(data || []);
-      } catch (error) {
-        console.error("Error cargando productos:", error);
-      } finally {
-        setLoading(false);
-      }
+  async function loadData() {
+    try {
+      const { data } = await getPublicProducts();
+      setProducts(data || []); // <- ahora SIEMPRE es un array
+    } catch (error) {
+      console.error("Error cargando productos:", error);
+    } finally {
+      setLoading(false);
     }
-    loadData();
-  }, []);
+  }
+  loadData();
+}, []);
+
 
   // 🔎 2) Filtrado de productos según búsqueda
   const filteredProducts = products.filter(p =>

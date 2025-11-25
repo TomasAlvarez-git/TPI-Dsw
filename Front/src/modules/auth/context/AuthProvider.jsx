@@ -1,13 +1,13 @@
+// src/context/AuthProvider.jsx
 import { createContext, useState } from 'react';
 import { login } from '../services/login';
+import { frontendErrorMessage } from '../helpers/backendError';
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    const token = localStorage.getItem('token');
-
-    return Boolean(token);
+    return Boolean(localStorage.getItem('token'));
   });
 
   const singout = () => {
@@ -16,32 +16,32 @@ function AuthProvider({ children }) {
   };
 
   const singin = async (username, password) => {
-    const { data, error } = await login(username, password);
+    try {
+      const { data, error } = await login(username, password);
 
-    if (error) {
-      return { error };
+      if (error) return { error };
+
+      // 🔥 ahora SÍ retornamos token y role
+      setIsAuthenticated(true);
+      return { token: data.token, role: data.role, error: null };
+
+    } catch (err) {
+
+      const backendCode = err?.response?.data?.code;
+
+      if (backendCode) {
+        return { error: { frontendErrorMessage: frontendErrorMessage[backendCode] } };
+      }
+
+      return { error: { frontendErrorMessage: "Llame a soporte" } };
     }
-
-    localStorage.setItem('token', data);
-    setIsAuthenticated(true);
-
-    return { error: null };
   };
 
   return (
-    <AuthContext.Provider
-      value={ {
-        isAuthenticated,
-        singin,
-        singout,
-      } }
-    >
+    <AuthContext.Provider value={{ isAuthenticated, singin, singout }}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
 
-export {
-  AuthProvider,
-  AuthContext,
-};
+export { AuthProvider, AuthContext };
