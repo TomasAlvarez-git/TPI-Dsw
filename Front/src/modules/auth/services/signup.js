@@ -1,11 +1,35 @@
+import { instance } from "../../shared/api/axiosInstance";
+
 export const signup = async (data) => {
-  const res = await fetch("http://localhost:3000/api/auth/register", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
+  try {
+    const endpoint =
+      data.role === "Admin"
+        ? "/api/auth/registerAdmin"
+        : "/api/auth/registerUser";
 
-  if (!res.ok) throw new Error("Error en el registro");
+    // Construimos exactamente el DTO que pide el backend
+    const payload = {
+      username: data.username,
+      password: data.password,
+      email: data.email,
+      phoneNumber: data.phoneNumber
+    };
 
-  return await res.json();
+    const response = await instance.post(endpoint, payload);
+
+    return {
+      token: response.data?.token || null,
+      role: response.data?.role || data.role,
+      error: null
+    };
+
+  } catch (error) {
+    return {
+      token: null,
+      role: null,
+      error:
+        error.response?.data?.message ||
+        "Error en el registro"
+    };
+  }
 };
