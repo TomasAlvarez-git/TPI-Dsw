@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Button from '../../shared/components/Button';
 import Card from '../../shared/components/Card';
-import { getProducts } from '../services/list';
+import { getPublicProducts } from '../services/list';
 
 const productStatus = {
   ALL: 'all',
@@ -26,12 +26,12 @@ function ListProductsPage() {
   const fetchProducts = async () => {
     try {
       setLoading(true);
-      const { data, error } = await getProducts(searchTerm, status, pageNumber, pageSize);
+      const { data, error } = await getPublicProducts(searchTerm, status, pageNumber, pageSize);
 
       if (error) throw error;
 
       setTotal(data.total);
-      setProducts(data.productItems);
+      setProducts(data || []);
     } catch (error) {
       console.error(error);
     } finally {

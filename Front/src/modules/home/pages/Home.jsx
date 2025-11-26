@@ -34,7 +34,10 @@ function HomePage() {
   async function loadData() {
     try {
       const { data } = await getPublicProducts();
-      setProducts(data || []); // <- ahora SIEMPRE es un array
+
+      // EL BACK PÚBLICO DEVUELVE ARRAY → TOMAR DIRECTO DATA
+      setProducts(data || []);
+      
     } catch (error) {
       console.error("Error cargando productos:", error);
     } finally {
