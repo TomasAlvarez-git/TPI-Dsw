@@ -26,7 +26,7 @@ import { instance } from '../../shared/api/axiosInstance';
 
 export const getPublicProducts = async () => {
   try {
-    const response = await instance.get("api/products");
+    const response = await instance.get('api/products');
 
     // El backend devuelve un ARRAY directo
     const list = Array.isArray(response.data) ? response.data : [];
@@ -37,7 +37,7 @@ export const getPublicProducts = async () => {
     };
 
   } catch (error) {
-    console.error("Error cargando productos públicos:", error);
+    console.error('Error cargando productos públicos:', error);
 
     return {
       data: [],
@@ -45,6 +45,3 @@ export const getPublicProducts = async () => {
     };
   }
 };
-
-
-

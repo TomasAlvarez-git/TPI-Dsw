@@ -23,6 +23,7 @@ function AuthProvider({ children }) {
 
       // 🔥 ahora SÍ retornamos token y role
       setIsAuthenticated(true);
+
       return { token: data.token, role: data.role, error: null };
 
     } catch (err) {
@@ -33,7 +34,7 @@ function AuthProvider({ children }) {
         return { error: { frontendErrorMessage: frontendErrorMessage[backendCode] } };
       }
 
-      return { error: { frontendErrorMessage: "Llame a soporte" } };
+      return { error: { frontendErrorMessage: 'Llame a soporte' } };
     }
   };
 

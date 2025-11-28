@@ -7,12 +7,12 @@ export const login = async (username, password) => {
   const token = response.data.token;
 
   // Decodificar JWT
-  const payload = JSON.parse(atob(token.split(".")[1]));
+  const payload = JSON.parse(atob(token.split('.')[1]));
 
-  const role = payload["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
+  const role = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
 
   return {
     data: { token, role: role.toLowerCase() },
-    error: null
+    error: null,
   };
 };

@@ -14,12 +14,12 @@ function CartPage() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 max-w-6xl mx-auto">
-      
+
       {/* LISTA DE PRODUCTOS */}
       <div className="flex-1 flex flex-col gap-4">
         {cartItems.map((item) => (
           <div key={item.id} className="bg-white border border-gray-200 rounded-xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-sm">
-            
+
             <div>
               <h3 className="text-xl font-bold text-gray-900 mb-1">{item.name}</h3>
               <div className="text-gray-500 text-sm flex flex-wrap gap-x-4 gap-y-1">

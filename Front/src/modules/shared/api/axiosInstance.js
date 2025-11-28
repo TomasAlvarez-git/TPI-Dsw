@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-  baseURL: "",
+  baseURL: '',
   withCredentials: true,
 });
 
@@ -32,7 +32,7 @@ instance.interceptors.request.use(
     }
 
     return config;
-  }
+  },
 );
 
 export { instance };

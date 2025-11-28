@@ -8,19 +8,20 @@ export function CartProvider({ children }) {
   // Cargar desde localStorage
   const [cartItems, setCartItems] = useState(() => {
     try {
-      const saved = localStorage.getItem("cart");
+      const saved = localStorage.getItem('cart');
+
       return saved ? JSON.parse(saved) : [];
     } catch (e) {
-      console.error("Error al leer carrito:", e);
+      console.error('Error al leer carrito:', e);
+
       return [];
     }
   });
 
   // Guardar en localStorage al cambiar
   useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cartItems));
+    localStorage.setItem('cart', JSON.stringify(cartItems));
   }, [cartItems]);
-
 
   // -------------------------------
   //  IDENTIFICADOR SEGURO
@@ -28,7 +29,6 @@ export function CartProvider({ children }) {
   const getSafeId = (product) => {
     return product.id ?? product.sku;  // si no existe id, usa sku
   };
-
 
   // -------------------------------
   //  AGREGAR AL CARRITO
@@ -46,7 +46,7 @@ export function CartProvider({ children }) {
         return prev.map(item =>
           item.id === productId
             ? { ...item, quantity: item.quantity + quantity }
-            : item
+            : item,
         );
       }
 
@@ -60,12 +60,11 @@ export function CartProvider({ children }) {
           name: product.name,
           price,
           quantity,
-          sku: product.sku
-        }
+          sku: product.sku,
+        },
       ];
     });
   };
-
 
   // -------------------------------
   //  BORRAR PRODUCTO
@@ -73,7 +72,6 @@ export function CartProvider({ children }) {
   const removeFromCart = (productId) => {
     setCartItems(prev => prev.filter(item => item.id !== productId));
   };
-
 
   // -------------------------------
   //  CAMBIAR CANTIDAD
@@ -83,19 +81,19 @@ export function CartProvider({ children }) {
       prev.map(item => {
         if (item.id === productId) {
           const newQty = Math.max(1, item.quantity + delta);
+
           return { ...item, quantity: newQty };
         }
+
         return item;
-      })
+      }),
     );
   };
-
 
   // -------------------------------
   //  LIMPIAR TODO
   // -------------------------------
   const clearCart = () => setCartItems([]);
-
 
   // -------------------------------
   //  TOTALES
@@ -103,9 +101,8 @@ export function CartProvider({ children }) {
   const totalCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
   const totalAmount = cartItems.reduce(
     (acc, item) => acc + (item.price * item.quantity),
-    0
+    0,
   );
-
 
   return (
     <CartContext.Provider
@@ -116,7 +113,7 @@ export function CartProvider({ children }) {
         updateQuantity,
         clearCart,
         totalCount,
-        totalAmount
+        totalAmount,
       }}
     >
       {children}

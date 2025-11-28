@@ -15,15 +15,15 @@ const useAuth = () => {
     if (error) return { error };
 
     // Guardar credenciales
-    localStorage.setItem("token", token);
-    localStorage.setItem("role", role);
+    localStorage.setItem('token', token);
+    localStorage.setItem('role', role);
 
     return { error: null };
   };
 
   const singout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("role");
+    localStorage.removeItem('token');
+    localStorage.removeItem('role');
     context.singout();
   };
 

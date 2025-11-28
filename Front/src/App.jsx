@@ -6,7 +6,7 @@ import LoginPage from './modules/auth/pages/LoginPage';
 import Dashboard from './modules/templates/components/Dashboard';
 import ProtectedRoute from './modules/auth/components/ProtectedRoute';
 import ListOrdersPage from './modules/orders/pages/ListOrdersPage';
-import HomeAdmin from './modules/home/pages/Home'; 
+import HomeAdmin from './modules/home/pages/Home';
 import ListProductsPage from './modules/products/pages/ListProductsPage';
 import CreateProductPage from './modules/products/pages/CreateProductPage';
 
@@ -34,8 +34,8 @@ function App() {
       ],
     },
     {
-      path: "/signup",
-      element: <SignUpPage/>
+      path: '/signup',
+      element: <SignUpPage/>,
     },
     // --- LOGIN ---
     {

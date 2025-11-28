@@ -14,7 +14,7 @@ function HomePage() {
 
   // 🔍 1) Leer parámetro ?search=
   const [searchParams] = useSearchParams();
-  const search = searchParams.get("search")?.toLowerCase() || "";
+  const search = searchParams.get('search')?.toLowerCase() || '';
 
   // useEffect(() => {
   //   async function loadData() {
@@ -31,32 +31,32 @@ function HomePage() {
   // }, []);
 
   useEffect(() => {
-  async function loadData() {
-    try {
-      const { data } = await getPublicProducts();
+    async function loadData() {
+      try {
+        const { data } = await getPublicProducts();
 
-      // EL BACK PÚBLICO DEVUELVE ARRAY → TOMAR DIRECTO DATA
-      setProducts(data || []);
-      
-    } catch (error) {
-      console.error("Error cargando productos:", error);
-    } finally {
-      setLoading(false);
+        // EL BACK PÚBLICO DEVUELVE ARRAY → TOMAR DIRECTO DATA
+        setProducts(data || []);
+
+      } catch (error) {
+        console.error('Error cargando productos:', error);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
-  loadData();
-}, []);
-
+    loadData();
+  }, []);
 
   // 🔎 2) Filtrado de productos según búsqueda
   const filteredProducts = products.filter(p =>
-    p.name.toLowerCase().includes(search)
+    p.name.toLowerCase().includes(search),
   );
 
   const handleQuantityChange = (sku, delta) => {
     setQuantities(prev => {
       const current = prev[sku] || 0;
       const newValue = Math.max(0, current + delta);
+
       return { ...prev, [sku]: newValue };
     });
   };
@@ -77,13 +77,13 @@ function HomePage() {
     <div>
       {/* Grid Responsiva */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        
+
         {/* 🔍 3) Usamos filteredProducts en lugar de products */}
         {filteredProducts.map((product) => {
           const quantity = quantities[product.sku] || 0;
 
           return (
-            <Card 
+            <Card
               key={product.sku}
               className="shadow-sm border-gray-100 hover:shadow-md transition flex flex-col"
             >
@@ -99,7 +99,7 @@ function HomePage() {
               </h3>
 
               <div className="flex items-center justify-between mt-auto">
-                
+
                 <span className="text-lg font-bold text-gray-900">
                   ${product.currentPrice || product.currentUnitPrice}
                 </span>
@@ -130,9 +130,9 @@ function HomePage() {
                     onClick={() => handleAddToCart(product)}
                     disabled={quantity === 0}
                     className={`border-none text-sm py-1.5 px-4 rounded-md font-medium transition ${
-                      quantity > 0 
-                        ? "bg-purple-100 text-purple-600 hover:bg-purple-200 cursor-pointer" 
-                        : "bg-gray-100 text-gray-400 cursor-not-allowed"
+                      quantity > 0
+                        ? 'bg-purple-100 text-purple-600 hover:bg-purple-200 cursor-pointer'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                   >
                     Agregar
