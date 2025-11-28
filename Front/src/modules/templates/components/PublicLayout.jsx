@@ -10,13 +10,14 @@ function PublicLayout() {
 
   const handleSearch = (e) => {
     const value = e.target.value;
+
     setSearch(value);
     navigate(`/?search=${value}`);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans">
-      
+
       {/* --- HEADER --- */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="container mx-auto px-4 h-16 lg:h-20 flex items-center justify-between gap-4">
@@ -35,33 +36,33 @@ function PublicLayout() {
             </Link>
 
             {/* Nav Links (Hidden on Mobile, Visible on Desktop) */}
-<nav className="hidden lg:flex gap-2 text-sm font-medium text-gray-600">
-  
-  {/* ENLACE PRODUCTOS */}
-  <Link 
-    to="/" 
-    className={`px-3 py-1.5 rounded-lg transition-colors ${
-      location.pathname === '/' 
-        ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Home
-        : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Home
-    }`}
-  >
-    Productos
-  </Link>
+            <nav className="hidden lg:flex gap-2 text-sm font-medium text-gray-600">
 
-  {/* ENLACE CARRITO */}
-  <Link 
-    to="/cart" 
-    className={`px-3 py-1.5 rounded-lg transition-colors ${
-      location.pathname === '/cart' 
-        ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Carrito
-        : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Carrito
-    }`}
-  >
+              {/* ENLACE PRODUCTOS */}
+              <Link
+                to="/"
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  location.pathname === '/'
+                    ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Home
+                    : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Home
+                }`}
+              >
+    Productos
+              </Link>
+
+              {/* ENLACE CARRITO */}
+              <Link
+                to="/cart"
+                className={`px-3 py-1.5 rounded-lg transition-colors ${
+                  location.pathname === '/cart'
+                    ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Carrito
+                    : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Carrito
+                }`}
+              >
     Carrito de compras
-  </Link>
-  
-</nav>
+              </Link>
+
+            </nav>
           </div>
 
           {/* 2. SEARCH BAR (Flexible width) */}
@@ -84,7 +85,7 @@ function PublicLayout() {
 
           {/* 3. ACTIONS (Desktop) & MENU TOGGLE (Mobile) */}
           <div className="shrink-0 flex items-center gap-3">
-            
+
             {/* Desktop Buttons */}
             <div className="hidden lg:flex items-center gap-3">
               <Link to="/login">
@@ -100,7 +101,7 @@ function PublicLayout() {
             </div>
 
             {/* Mobile Hamburger Menu */}
-            <button 
+            <button
               className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
             >
@@ -111,7 +112,7 @@ function PublicLayout() {
           </div>
 
         </div>
-        
+
         {/* Mobile Menu Dropdown (Opcional, para completar la funcionalidad móvil) */}
         {isMenuOpen && (
           <div className="lg:hidden border-t border-gray-100 bg-white p-4 flex flex-col gap-4 shadow-lg absolute w-full">
@@ -120,12 +121,12 @@ function PublicLayout() {
               <Link to="/cart" onClick={() => setIsMenuOpen(false)} className="text-gray-700 font-medium py-2">Carrito de compras</Link>
             </nav>
             <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
-               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-purple-100 text-purple-700 py-2 rounded-lg">Iniciar Sesión</Button>
-               </Link>
-               <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
-                  <Button className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg">Registrarse</Button>
-               </Link>
+              <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                <Button className="w-full bg-purple-100 text-purple-700 py-2 rounded-lg">Iniciar Sesión</Button>
+              </Link>
+              <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                <Button className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg">Registrarse</Button>
+              </Link>
             </div>
           </div>
         )}

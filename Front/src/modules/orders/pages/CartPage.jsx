@@ -17,12 +17,12 @@ function CartPage() {
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 items-start pb-20">
-      
+
       {/* SECCIÓN 1: Lista de Items */}
       <div className="w-full flex-1 flex flex-col gap-4">
         {cartItems.map((item) => (
-          <div 
-            key={item.id} 
+          <div
+            key={item.id}
             className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm flex flex-col lg:flex-row lg:items-center justify-between gap-4"
           >
             {/* Info Producto */}
@@ -39,7 +39,7 @@ function CartPage() {
 
             {/* Controles (Stepper + Borrar) */}
             <div className="flex items-center justify-between lg:justify-end gap-4 lg:gap-6 border-t border-gray-100 pt-4 lg:pt-0 lg:border-0 w-full lg:w-auto">
-              
+
               {/* Stepper Minimalista */}
               <div className="flex items-center gap-2">
                 <button

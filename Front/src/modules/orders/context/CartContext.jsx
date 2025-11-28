@@ -1,6 +1,7 @@
 // CartContext.jsx
 import { createContext, useState, useEffect, useContext } from 'react';
 
+// Importante: No exportamos esto para evitar el error de mixed exports
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
@@ -121,4 +122,7 @@ export function CartProvider({ children }) {
   );
 }
 
+// Agregamos este comentario para decirle a ESLint que permita exportar el hook
+// junto con el componente. Es seguro hacerlo en archivos de Contexto.
+// eslint-disable-next-line react-refresh/only-export-components
 export const useCart = () => useContext(CartContext);

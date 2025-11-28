@@ -14,11 +14,23 @@ const SignUpPage = () => {
   const password = watch('password');
 
   const onSubmit = async (data) => {
+    // 1. Desestructuramos para separar confirmPassword del resto
     const { confirmPassword, ...dataToSend } = data;
+
+    // 2. SOLUCIÓN: Usamos la variable 'confirmPassword' para una validación final.
+    // Esto satisface al linter (porque la estamos usando) y añade seguridad extra.
+    if (confirmPassword !== dataToSend.password) {
+      alert('Las contraseñas no coinciden');
+
+      return;
+    }
+
+    // Si pasa la validación, enviamos solo dataToSend (sin el confirmPassword)
     const response = await signup(dataToSend);
 
     if (response.error) {
-      alert(response.error); // Podrías mejorar esto con un estado de error global igual que en Login
+      alert(response.error);
+
       return;
     }
 
@@ -26,23 +38,22 @@ const SignUpPage = () => {
       localStorage.setItem('token', response.token);
       localStorage.setItem('role', response.role);
       navigate('/admin/home');
+
       return;
     }
 
     navigate('/login');
   };
 
-  // Clases compartidas para reutilizar y mantener consistencia
-  const inputClass = "w-full bg-white border border-gray-200 text-gray-800 text-sm sm:text-base rounded-lg px-4 py-2.5 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100 transition-all";
-  const labelClass = "text-gray-800 font-medium text-sm sm:text-base ml-1";
-  const errorClass = "text-red-500 text-xs font-medium ml-1 mt-1";
+  // Clases compartidas
+  const inputClass = 'w-full bg-white border border-gray-200 text-gray-800 text-sm sm:text-base rounded-lg px-4 py-2.5 focus:outline-none focus:border-purple-300 focus:ring-2 focus:ring-purple-100 transition-all';
+  const labelClass = 'text-gray-800 font-medium text-sm sm:text-base ml-1';
+  const errorClass = 'text-red-500 text-xs font-medium ml-1 mt-1';
 
   return (
     <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center p-4 font-sans">
-      
       {/* CARD PRINCIPAL */}
       <div className="bg-white w-full max-w-[450px] rounded-xl shadow-sm border border-gray-100 p-6 sm:p-8">
-        
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
 
           {/* USUARIO */}
@@ -73,7 +84,7 @@ const SignUpPage = () => {
             {errors.email && <span className={errorClass}>{errors.email.message}</span>}
           </div>
 
-          {/* TELÉFONO (Mantengo este campo aunque no sale en la foto, por si lo necesitas) */}
+          {/* TELÉFONO */}
           <div className="flex flex-col gap-1.5">
             <label className={labelClass}>Teléfono</label>
             <input
@@ -99,7 +110,6 @@ const SignUpPage = () => {
                 <option value="Admin">Admin</option>
                 <option value="User">User</option>
               </select>
-              {/* Flechita custom para el select para que se vea moderno */}
               <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gray-500">
                 <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
