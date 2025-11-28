@@ -4,11 +4,12 @@ function LoginPage() {
   return (
     <div className='
       flex
-      flex-col
-      justify-center
-      h-[100dvh]
+      min-h-[100dvh] // Usar min-h para evitar problemas si el contenido crece
+      w-full
+      items-center // Centrado vertical siempre
+      justify-center // Centrado horizontal siempre
       bg-neutral-100
-      sm:items-center
+      p-4 // Padding para que no toque los bordes en móviles muy pequeños
     '>
       <LoginForm />
     </div>

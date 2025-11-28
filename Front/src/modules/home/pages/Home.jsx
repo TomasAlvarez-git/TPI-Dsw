@@ -11,33 +11,14 @@ function HomePage() {
   const [quantities, setQuantities] = useState({});
 
   const { addToCart } = useCart();
-
-  // 🔍 1) Leer parámetro ?search=
   const [searchParams] = useSearchParams();
   const search = searchParams.get('search')?.toLowerCase() || '';
-
-  // useEffect(() => {
-  //   async function loadData() {
-  //     try {
-  //       const { data } = await getPublicProducts();
-  //       setProducts(data || []);
-  //     } catch (error) {
-  //       console.error("Error cargando productos:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   }
-  //   loadData();
-  // }, []);
 
   useEffect(() => {
     async function loadData() {
       try {
         const { data } = await getPublicProducts();
-
-        // EL BACK PÚBLICO DEVUELVE ARRAY → TOMAR DIRECTO DATA
         setProducts(data || []);
-
       } catch (error) {
         console.error('Error cargando productos:', error);
       } finally {
@@ -47,7 +28,6 @@ function HomePage() {
     loadData();
   }, []);
 
-  // 🔎 2) Filtrado de productos según búsqueda
   const filteredProducts = products.filter(p =>
     p.name.toLowerCase().includes(search),
   );
@@ -56,14 +36,12 @@ function HomePage() {
     setQuantities(prev => {
       const current = prev[sku] || 0;
       const newValue = Math.max(0, current + delta);
-
       return { ...prev, [sku]: newValue };
     });
   };
 
   const handleAddToCart = (product) => {
     const qty = quantities[product.sku] || 0;
-
     if (qty > 0) {
       addToCart(product, qty);
       setQuantities(prev => ({ ...prev, [product.sku]: 0 }));
@@ -71,75 +49,105 @@ function HomePage() {
   };
 
   if (loading)
-    return <div className="text-center mt-10 text-xl text-gray-500">Cargando productos...</div>;
+    return <div className="text-center mt-20 text-gray-400">Cargando productos...</div>;
 
-  return (
-    <div>
-      {/* Grid Responsiva */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-
-        {/* 🔍 3) Usamos filteredProducts en lugar de products */}
+return (
+    <div className="pb-10">
+      {/* CAMBIO 1: Contenedor 
+         Quitamos 'grid grid-cols...' y usamos 'flex flex-wrap'.
+         Mantenemos 'gap-6' (24px).
+      */}
+      <div className="flex flex-wrap gap-6">
+        
         {filteredProducts.map((product) => {
           const quantity = quantities[product.sku] || 0;
 
           return (
             <Card
               key={product.sku}
-              className="shadow-sm border-gray-100 hover:shadow-md transition flex flex-col"
+              /* CAMBIO 2: Clases de la Card
+                 - flex-grow: Permite que la tarjeta se estire si es la última de la fila.
+                 - w-full: Base para móvil (1 columna).
+                 - sm:w-[calc(50%-12px)]: Para tablet (2 col), resta la mitad del gap (24px/2).
+                 - lg:w-[calc(25%-18px)]: Para desktop (4 col), resta 3/4 del gap.
+              */
+              className={`
+                bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full
+                flex-grow 
+                w-full 
+                sm:w-[calc(50%-12px)] 
+                lg:w-[calc(25%-18px)]
+              `}
             >
-
-              <div className="bg-gray-200 aspect-square rounded-lg mb-4 flex items-center justify-center text-gray-400">
-                <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                </svg>
+              {/* ... El resto del contenido de la Card se mantiene igual ... */}
+              
+              <div className="bg-gray-200 aspect-square rounded-lg mb-4 flex items-center justify-center relative overflow-hidden text-gray-300">
+                 <svg className="w-16 h-16" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zm-5.04-6.71l-2.75 3.54-1.96-2.36L6.5 17h11l-3.54-4.71z"/>
+                 </svg>
               </div>
 
-              <h3 className="font-medium text-gray-900 text-lg truncate mb-2" title={product.name}>
-                {product.name}
-              </h3>
+<div className="flex flex-col flex-1">
+  
+  {/* TÍTULO */}
+  <h3 className="text-gray-800 font-medium text-base leading-tight mb-2 line-clamp-2" title={product.name}>
+    {product.name}
+  </h3>
 
-              <div className="flex items-center justify-between mt-auto">
+  {/* Spacer para empujar el contenido hacia abajo */}
+  <div className="flex-1"></div>
 
-                <span className="text-lg font-bold text-gray-900">
-                  ${product.currentPrice || product.currentUnitPrice}
-                </span>
+  {/* --- CAMBIOS AQUÍ: FOOTER --- */}
+  {/* Usamos 'flex items-center justify-between' para separar Precio (Izquierda) de Controles (Derecha) */}
+  <div className="mt-3 flex items-center justify-between">
+      
+      {/* 1. PRECIO (A la izquierda) */}
+      <span className="text-lg font-bold text-gray-900">
+        ${product.currentPrice || product.currentUnitPrice}
+      </span>
 
-                <div className="flex items-center gap-3">
+      {/* 2. CONTROLES (A la derecha: Stepper + Botón) */}
+      <div className="flex items-center gap-2">
+        
+        {/* Botón Menos (Texto simple, sin borde) */}
+        <button
+          onClick={() => handleQuantityChange(product.sku, -1)}
+          className="w-6 h-6 flex items-center justify-center text-xl font-bold text-gray-800 hover:text-purple-600 transition-colors pb-1"
+        >
+          −
+        </button>
+        
+        {/* Cajita del número (Estilo 'pill' pequeño con borde gris) */}
+        <div className="w-8 h-6 flex items-center justify-center text-sm font-semibold text-gray-700 bg-white border border-gray-200 rounded-md">
+          {quantity}
+        </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => handleQuantityChange(product.sku, -1)}
-                      className="text-gray-400 hover:text-gray-600 text-xl font-bold focus:outline-none"
-                    >
-                      −
-                    </button>
+        {/* Botón Más (Texto simple, sin borde) */}
+        <button
+          onClick={() => handleQuantityChange(product.sku, 1)}
+          className="w-6 h-6 flex items-center justify-center text-xl font-bold text-gray-800 hover:text-purple-600 transition-colors pb-1"
+        >
+          +
+        </button>
 
-                    <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-sm min-w-[24px] text-center border border-gray-200">
-                      {quantity}
-                    </span>
+        {/* Botón Agregar (Compacto, estilo lila suave como la imagen) */}
+        <Button
+          onClick={() => handleAddToCart(product)}
+          disabled={quantity === 0}
+          className={`
+            ml-1 px-3 py-1 rounded-lg text-sm font-medium transition-colors
+            ${quantity > 0 
+              ? 'bg-purple-100 text-purple-700 hover:bg-purple-200' 
+              : 'bg-gray-100 text-gray-400 cursor-not-allowed'}
+          `}
+        >
+          Agregar
+        </Button>
+      </div>
+  </div>
+  {/* --- FIN CAMBIOS --- */}
 
-                    <button
-                      onClick={() => handleQuantityChange(product.sku, 1)}
-                      className="text-gray-400 hover:text-gray-600 text-xl font-bold focus:outline-none"
-                    >
-                      +
-                    </button>
-                  </div>
-
-                  <Button
-                    onClick={() => handleAddToCart(product)}
-                    disabled={quantity === 0}
-                    className={`border-none text-sm py-1.5 px-4 rounded-md font-medium transition ${
-                      quantity > 0
-                        ? 'bg-purple-100 text-purple-600 hover:bg-purple-200 cursor-pointer'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                    }`}
-                  >
-                    Agregar
-                  </Button>
-
-                </div>
-              </div>
+</div>
             </Card>
           );
         })}

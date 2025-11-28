@@ -1,74 +1,138 @@
-import { Outlet, Link, useNavigate } from 'react-router-dom';
+import { Outlet, Link, useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import Button from '../../shared/components/Button';
 
 function PublicLayout() {
   const [search, setSearch] = useState('');
+  const [isMenuOpen, setIsMenuOpen] = useState(false); // Para el menú móvil si se necesitara expandir
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleSearch = (e) => {
     const value = e.target.value;
-
     setSearch(value);
-
-    // Redirigimos a Home con ?search=xxx
     navigate(`/?search=${value}`);
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 text-gray-800 font-sans">
-      <header className="bg-white shadow-sm sticky top-0 z-50 border-b border-gray-200">
-        <div className="container mx-auto px-4 h-20 flex justify-between items-center gap-8">
+      
+      {/* --- HEADER --- */}
+      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <div className="container mx-auto px-4 h-16 lg:h-20 flex items-center justify-between gap-4">
 
-          <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-2 text-2xl font-bold text-gray-800">
-              <div className="bg-white text-black rounded-lg p- w-8 h-8 flex items-center justify-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 48 48"
-                  className="w-6 h-6 fill-current"
-                >
-                  <path d="M36 35a4 4 0 0 0 4-4V17a5 5 0 0 0 1-3 1 1 0 0 0-.08-.39l-3-7A1 1 0 0 0 37 6H11a1 1 0 0 0-.92.6l-3 7A1 1 0 0 0 7 14a5 5 0 0 0 1 3v14a4 4 0 0 0 4 4h6.5v2a3.74 3.74 0 0 0-3.5 3.74V41a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1v-.26A3.74 3.74 0 0 0 29.5 37v-2zm2-7H10v-9.42a3.94 3.94 0 0 0 .48.18 4.43 4.43 0 0 0 .49.13A5 5 0 0 0 16 17a5 5 0 0 0 8 0 5 5 0 0 0 8 0 5 5 0 0 0 5 1.89 4.43 4.43 0 0 0 .49-.13 3.94 3.94 0 0 0 .48-.18zM9 14.19 11.66 8h24.68L39 14.19a3 3 0 0 1-6-.19 1 1 0 0 0-2 0 3 3 0 0 1-6 0 1 1 0 0 0-2 0 3 3 0 0 1-6 0 1 1 0 0 0-2 0 3 3 0 0 1-6 .19zM30.83 40H17.17a1.72 1.72 0 0 1 1.57-1h10.52a1.72 1.72 0 0 1 1.57 1zM20.5 37v-2h7v2zM12 33a2 2 0 0 1-2-2v-1h28v1a2 2 0 0 1-2 2z"/>
+          {/* 1. LOGO & NAV (Desktop) */}
+          <div className="flex items-center gap-6 lg:gap-8 shrink-0">
+            {/* Logo Icon */}
+            <Link to="/" className="flex items-center">
+              <div className="text-black">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 17L12 22L22 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  <path d="M2 12L12 17L22 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
                 </svg>
               </div>
             </Link>
 
-            <nav className="hidden md:flex gap-6 text-gray-600 font-medium">
-              <Link to="/" className="hover:text-purple-600 transition">Productos</Link>
-              <Link to="/cart" className="hover:text-purple-600 transition">Carrito de compras</Link>
-            </nav>
+            {/* Nav Links (Hidden on Mobile, Visible on Desktop) */}
+<nav className="hidden lg:flex gap-2 text-sm font-medium text-gray-600">
+  
+  {/* ENLACE PRODUCTOS */}
+  <Link 
+    to="/" 
+    className={`px-3 py-1.5 rounded-lg transition-colors ${
+      location.pathname === '/' 
+        ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Home
+        : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Home
+    }`}
+  >
+    Productos
+  </Link>
+
+  {/* ENLACE CARRITO */}
+  <Link 
+    to="/cart" 
+    className={`px-3 py-1.5 rounded-lg transition-colors ${
+      location.pathname === '/cart' 
+        ? 'bg-gray-100 text-gray-900 font-semibold'  // Estilo si estoy en Carrito
+        : 'hover:text-gray-900 hover:bg-gray-50'     // Estilo si NO estoy en Carrito
+    }`}
+  >
+    Carrito de compras
+  </Link>
+  
+</nav>
           </div>
 
-          {/* Barra de búsqueda */}
-          <div className="flex-1 max-w-lg hidden md:block">
-            <div className="relative">
+          {/* 2. SEARCH BAR (Flexible width) */}
+          <div className="flex-1 max-w-2xl mx-2 lg:mx-4">
+            <div className="relative group">
               <input
                 type="text"
                 value={search}
                 onChange={handleSearch}
-                placeholder="Buscar productos..."
-                className="w-full bg-gray-100 text-gray-800 rounded-lg pl-4 pr-10 py-2 focus:outline-none focus:ring-2 focus:ring-purple-200"
+                placeholder="Search"
+                className="w-full bg-white border border-gray-300 text-gray-800 text-sm rounded-full pl-4 pr-10 py-2 focus:outline-none focus:border-gray-400 focus:ring-0 transition-all shadow-sm group-hover:border-gray-400"
               />
+              <div className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
-            <Link to="/login">
-              <Button variant="secondary" className="bg-purple-100 text-purple-700 hover:bg-purple-200 border-none text-sm px-4 py-2 rounded-md font-medium">
-                Iniciar Sesión
-              </Button>
-            </Link>
-            <Link to="/signup">
-              <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300 border-none text-sm px-4 py-2 rounded-md font-medium">
-                Registrarse
-              </Button>
-            </Link>
+          {/* 3. ACTIONS (Desktop) & MENU TOGGLE (Mobile) */}
+          <div className="shrink-0 flex items-center gap-3">
+            
+            {/* Desktop Buttons */}
+            <div className="hidden lg:flex items-center gap-3">
+              <Link to="/login">
+                <Button className="bg-purple-100 text-purple-700 hover:bg-purple-200 border-none px-5 py-2 rounded-lg font-medium text-sm transition-colors">
+                  Iniciar Sesión
+                </Button>
+              </Link>
+              <Link to="/signup">
+                <Button className="bg-gray-200 text-gray-700 hover:bg-gray-300 border-none px-5 py-2 rounded-lg font-medium text-sm transition-colors">
+                  Registrarse
+                </Button>
+              </Link>
+            </div>
+
+            {/* Mobile Hamburger Menu */}
+            <button 
+              className="lg:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
+              </svg>
+            </button>
           </div>
 
         </div>
+        
+        {/* Mobile Menu Dropdown (Opcional, para completar la funcionalidad móvil) */}
+        {isMenuOpen && (
+          <div className="lg:hidden border-t border-gray-100 bg-white p-4 flex flex-col gap-4 shadow-lg absolute w-full">
+            <nav className="flex flex-col gap-2">
+              <Link to="/" onClick={() => setIsMenuOpen(false)} className="text-gray-700 font-medium py-2">Productos</Link>
+              <Link to="/cart" onClick={() => setIsMenuOpen(false)} className="text-gray-700 font-medium py-2">Carrito de compras</Link>
+            </nav>
+            <div className="flex flex-col gap-2 pt-2 border-t border-gray-100">
+               <Link to="/login" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full bg-purple-100 text-purple-700 py-2 rounded-lg">Iniciar Sesión</Button>
+               </Link>
+               <Link to="/signup" onClick={() => setIsMenuOpen(false)}>
+                  <Button className="w-full bg-gray-200 text-gray-700 py-2 rounded-lg">Registrarse</Button>
+               </Link>
+            </div>
+          </div>
+        )}
       </header>
 
-      <main className="flex-1 container mx-auto px-4 py-8">
+      {/* Main Content with Padding */}
+      <main className="flex-1 container mx-auto px-4 py-6 lg:py-10">
         <Outlet />
       </main>
     </div>
